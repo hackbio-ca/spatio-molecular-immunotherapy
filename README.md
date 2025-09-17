@@ -1,6 +1,6 @@
-# demo-project
+# spatio-molecular-immunotherapy
 
-A brief description of the project. Explain what it does and who it's for.
+Spatio-Molecular Deep Learning for Immunotherapy Response Prediction
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
