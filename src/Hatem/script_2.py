@@ -41,6 +41,13 @@ X_train_res, y_train_res = sm.fit_resample(X_train, y_train)
 clf = RandomForestClassifier(n_estimators=200, random_state=42)
 clf.fit(X_train_res, y_train_res)
 
+# What features are contributing the most
+import matplotlib.pyplot as plt
+importances = clf.feature_importances_
+plt.barh(X.columns, importances)
+plt.show()
+
+
 # -------------------
 # Evaluate
 # -------------------
