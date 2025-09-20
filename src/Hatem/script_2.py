@@ -1,12 +1,9 @@
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from imblearn.over_sampling import SMOTE
-import matplotlib.pyplot as plt
-
 
 # -------------------
 # Load data
@@ -14,7 +11,7 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("../../data/Hatem/diabetes_binary_5050split_health_indicators_BRFSS2015.csv")  # change path if needed
 
 # Separate features and target
-X = df.drop(columns=["Diabetes_binary"])
+X = df.drop(columns=["Diabetes_binary", "CholCheck", "AnyHealthcare"])
 y = df["Diabetes_binary"]
 
 # -------------------
@@ -44,27 +41,11 @@ X_train_res, y_train_res = sm.fit_resample(X_train, y_train)
 clf = RandomForestClassifier(n_estimators=200, random_state=42)
 clf.fit(X_train_res, y_train_res)
 
-# -------------------
-# Get feature importance to know which features to drop from the training data
-# -------------------
-
-importance = clf.feature_importances_
-
-feature_importance = pd.DataFrame({
-    'Feature': X.columns,
-    'Importance': importance
-})
-
-# Sort by importance descending
-feat_importance = feature_importance.sort_values(by='Importance', ascending=True)  # ascending=True for horizontal bar chart
-
-# Plot horizontal bar chart
-plt.figure(figsize=(10,8))
-plt.barh(feature_importance['Feature'], feature_importance['Importance'], color='skyblue')
-plt.xlabel('Feature Importance')
-plt.title('RandomForest Feature Importance')
-plt.show()
-
+# # What features are contributing the most
+# import matplotlib.pyplot as plt
+# importances = clf.feature_importances_
+# plt.barh(X.columns, importances)
+# plt.show()
 
 
 # -------------------
