@@ -1,16 +1,17 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from imblearn.over_sampling import SMOTE
+import xgboost as xgb
+import numpy as np
 
 # -------------------
 # Load data
 # -------------------
 df = pd.read_csv("../../data/Hatem/diabetes_binary_5050split_health_indicators_BRFSS2015.csv")  # change path if needed
 
-# Separate features and target
+# Drop features that are less important or redundant
 X = df.drop(columns=["Diabetes_binary", "CholCheck", "AnyHealthcare"])
 y = df["Diabetes_binary"]
 
@@ -30,27 +31,29 @@ X_train[numeric_cols] = scaler.fit_transform(X_train[numeric_cols])
 X_test[numeric_cols] = scaler.transform(X_test[numeric_cols])
 
 # -------------------
-# Balance classes (if needed)
+# Balance classes (SMOTE)
 # -------------------
 sm = SMOTE(random_state=42)
 X_train_res, y_train_res = sm.fit_resample(X_train, y_train)
 
 # -------------------
-# Train model
+# Train XGBoost model
 # -------------------
-clf = RandomForestClassifier(n_estimators=200, random_state=42)
-clf.fit(X_train_res, y_train_res)
+xgb_clf = xgb.XGBClassifier(
+    n_estimators=300,
+    max_depth=3,
+    learning_rate=0.1,
+    subsample=0.7,
+    colsample_bytree=1.0,
+    random_state=42,
+    eval_metric='logloss'
+)
 
-# # What features are contributing the most
-# import matplotlib.pyplot as plt
-# importances = clf.feature_importances_
-# plt.barh(X.columns, importances)
-# plt.show()
-
+xgb_clf.fit(X_train_res, y_train_res)
 
 # -------------------
-# Evaluate
+# Evaluate model
 # -------------------
-y_pred = clf.predict(X_test)
-print("Classification Report:\n", classification_report(y_test, y_pred))
+y_pred = xgb_clf.predict(X_test)
+print("XGBoost Classification Report:\n", classification_report(y_test, y_pred))
 print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
