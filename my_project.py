@@ -5,4 +5,3 @@ import flexynesis
 def example_function():
     pass # Example use of the model goes here
     return True
-
